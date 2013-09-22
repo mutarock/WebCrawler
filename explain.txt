@@ -1,0 +1,148 @@
+The program is for crawling websites from internet. First, the user can input a number N, it means the pages they want to crawl 
+from top 10 search result from Yahoo. So the system can crawl no more than 10*N pages. Second, the user can input the keyword for 
+search result.
+
+After input, the program will first get top 10 search result from Yahoo search engine (by class YahooSearch and YahooResult).
+Then input this 10 result into the queue, and the program will start Breadth-First search for every top 10 result. it means that 
+the program will crawl N pages from top 1 search result, put result into queue, when finish crawling N pages, the program will
+start from top 2 result and crawl N pages and so on.
+
+top1  --> BFS --> crawl N pages
+top2  --> BFS --> crawl N pages
+ .
+ .
+ .
+ .
+top10 --> BFS --> crawl N pages
+
+
+When crawling pages, the program use "BeautifulSoup" to get all the url in the website, and then the program will check the url is 
+correct or not. It means that the program will check the url is a html or not visited before. 
+
+"CrawlResult3" is the main class in the program, it contain a lot of imformation. first the system sends every url in the class, and 
+then check the url. The program uses class "URL_filter" and "Content_Type" to decide the url is html or not, then check the url is visited 
+or not by "CheckVisit". Because some website may contain sensitive data, so it is necessary to check the robot.txt, so there is a class
+"Robot" for checking it.
+
+If the url can pass all the test, like the content type is correct, it is not visited before, and no other connect error like 404 or 403,
+the url will put into the queue. Thr program will repeat the whole step until getting N pages.
+
+
+------------------------------------------------------------------------------------------------------------------
+
+Function:
+
+# download the website
+def http_download(url):
+
+# initialize Global variables 
+def set_globvar(): 
+
+# analyze the domain of URL
+def getDomain(url):
+
+# get the link after domain
+def getSubURL(url,domain):
+
+# check the variables, for understand the content_type
+def isset(v): 
+
+# non-ASCII Encode
+def urlEncodeNonAscii(b):
+
+# replace some character
+def fix(x):
+
+------------------------------------------------------------------------------------------------------------------
+Class:
+
+
+# Read robot.txt, to understand the web can be fetched or not
+class Robot:
+    def __init__(self,url):
+      
+    def robot_code(self,__url__):
+            
+    def getErr(self):
+
+ 
+# defind the content-type we want( more info @ http://zh.wikipedia.org/zh-tw/MIME )
+class Content_Type:
+    def __init__(self):
+
+    def getContentType(self):
+
+    def check(self,url):
+
+
+### Check if url is already FOUND in VISIT list
+class CheckVisit:
+    def __init__(self,visit_url,input_url):
+
+    def check(self):
+
+# URL filter, can put the condition here
+class URL_filter:
+    def __init__(self,url):
+
+    def check(self):
+
+#for crawl result
+class CrawlResult3:
+    def __init__(self, URL, MAX_PAGE , CUR_PAGE , ALL_VISIT , CT ):
+
+    def result(self):
+    
+------------------------------------------------------------------------------------------------------------------
+Tools from network:
+
+BeautifulSoup:
+	this is a parser that has good performance, i use this parser to get link in a web page.
+	i only get the link behind the class <a> and tag <href="">
+	the result almost same as the code on the course website [ http://cis.poly.edu/cs912/parsing.txt ]
+
+	# download link @ http://www.crummy.com/software/BeautifulSoup/download/3.x/
+	# run in command "python setup.py install" to finish setup
+	
+# get top 10 result from Yahoo       
+class YahooSearch:
+class YahooResult:
+	I use this class to get top10 search result from yahoo, but i do some fix to avoid some error.
+	The error I talk is in the Bugs.txt
+	[ http://rosettacode.org/wiki/Yahoo!_search_interface ]
+
+
+xgoogle:
+	I also find some package that can use in this homework, like "xgoogle"
+	it can help us to get the top 10 search result from Google without forbidden message.
+	[ http://www.catonmat.net/blog/python-library-for-google-search/ ]
+
+------------------------------------------------------------------------------------------------------------------
+
+Some Bug:
+
+1. I use this tag to find the result from yahoo.
+<a class="yschttl spt" href="
+
+but sometimes there are not enough 10 tags, so I can only find top9
+
+if we search "apple", we only can get top9 result.
+
+
+2. When I search the tag for some information i find the web site about how to get top10 result from yahoo.
+<a class="yschttl spt" href="
+
+http://rosettacode.org/wiki/Yahoo!_search_interface
+
+I use its code to get yahoo result. but there is some problem, so I fix the problem.
+
+The problem is that when we use some keywords the program cannot get the correct URL. like "kfos"
+In the original program, we get the url by check the tag <span>
+
+<span class=url>www.<b>acronymfinder.com</b>/Kosova-Foundation-&#8203;for-Open-Society...</span>
+
+so we will get url = www.acronymfinder.com/Kosova-Foundation-&#8203;for-Open-Society...
+
+but the correct rul is "http://www.acronymfinder.com/Kosova-Foundation-for-Open-Society-(KFOS).html"
+
+so i fix it by using the tag href="" to get the correct URL
